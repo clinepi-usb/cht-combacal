@@ -1,0 +1,10 @@
+{
+    "icon": "medic-clinic",
+    "title": "Supervision/Mentorship Activity Form",
+    "context": {
+        "person": false,
+        "place": true,
+        "expression": "user.role !== 'chw' && user.role !== 'ccw' && contact.type !== 'household'"
+    },
+    "hidden_fields": [ "data"]
+}

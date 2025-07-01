@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+  medic-os:
+    container_name: combacal.medicos
+    image: dkfbasel/combacal.medicos:1.0.0
+    build:
+      context: .
+      dockerfile: medic-os/Dockerfile
+    volumes:
+      - ./srv:/srv
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:8090:5985"
+    networks:
+      - medic-net
+    env_file:
+      - medic-os.env
+
+  medic-data:
+    container_name: combacal.medicos-data
+    image: dkfbasel/combacal.medicos:data-pilot-test
+    build:
+      context: .
+      dockerfile: medic-srv/Dockerfile
+
+  haproxy:
+    container_name: haproxy
+    image: medicmobile/haproxy:rc-1.17
+    volumes:
+      - ./srv:/srv
+    env_file:
+      - haproxy.env
+    networks:
+      - medic-net
+
+  couch-db-backup:
+    container_name: combacal.couchdb-backup
+    image: couchdb:2.3.1
+    networks:
+      - medic-net
+    ports:
+      - "127.0.0.1:5984:5984"
+    volumes:
+      - backup:/opt/couchdb/data
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+
+  db:
+    container_name: combacal.postgres-db
+    image: postgres:14.4
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks:
+      - medic-net
+    env_file: postgres.env
+
+  couch2pg:
+    container_name: combacal.couch2pg
+    image: dkfbasel/combacal.couch2pg:1.0.0
+    build:
+      context: .
+      dockerfile: couch2pg/Dockerfile
+    networks:
+      - medic-net
+    env_file: couch2pg.env
+
+volumes:
+  medic-data:
+    external: true
+  database:
+    name: postgres-combacal
+  backup:
+    name: couchdb-backup-combacal
+
+networks:
+  medic-net:
+    name: medic-net

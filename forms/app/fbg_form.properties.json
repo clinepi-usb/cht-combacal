@@ -1,0 +1,10 @@
+{
+  "icon": "icon-healthcare-medicine",
+  "title": "Fasting Blood Sugar Form",
+  "context": {
+    "person": true,
+    "place": false,
+    "expression": "!contact && !contact.date_of_death"
+  },
+  "hidden_fields": [ "data"]
+}

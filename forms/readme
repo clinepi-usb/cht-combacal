@@ -1,0 +1,34 @@
+*Python Scripts for automated addition of hierarchy variables*
+
+Forms are an important part of the ComBaCaL application. They are the primary means for enabling the interaction between the user and the app. The XForms are mostly designed and adapted by the medical team using the XLSForm standard. When uploading this xlsx forms to a CHT application, they are converted to ODK XForms. Before the form can be successfully uploaded to a CHT application instance, we have to add several CHT-specific fields. Those fields ensure the integration of the form in a CHT application by loading additional context information such as the current user, lineage information, patient, and CCW informations. Forms are constantly changed and have to be uploaded again and again by us. As the medical team can only validate the forms in the ODK validator the CHT-specific fields have to be added before uploading which always cost us a lot of time.
+
+Therefore we wrote a Python script for each of the diabetes forms and hypertension forms, that enables us to easily add the lineage variables.
+
+To edit an appForms downloaded from sharepoint do you need to install openpyxl with the following command:
+
+pip install openpyxl
+
+Then you can follow this steps to add the lineage variables to the Diabetes forms (notice that the excel file must be closed while doint this):
+
+1) Save the file with the correct name in the directory forms/app
+2) run C:/Python27/python.exe {path to file}/editDMForms.py  with your local pyhton version
+3) Choose the file you have saved
+4) Enter the amount of preloading variables including the trial_arm
+5) Check if the file has been edited correctly
+
+To add the lineage variables to the Hypertenison forms you can follow this steps (notice that the excel file must be closed while doing it):
+
+1) Save the file with the correct name in the directory forms/app
+2) run C:/Python27/python.exe {path to file}/editBPForms.py  with your local pyhton version
+3) Choose the file you have saved
+4) Enter the amount of preloading variables including the trial_arm
+5) Check if the file has been edited correctly
+
+
+
+What the scripts actually do is loading the lineage variables from Template file into the newly added file. To not having the lineage variables twice, it first checks if the lineage variable copied is already in the file before pasting.
+
+The scripts can be found undet the following relative paths in the code:
+
+forms\editBPForms.py
+forms\editDMForms.py

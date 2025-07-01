@@ -1,0 +1,1 @@
+docker run --env-file cht.env -it --rm -v $(pwd)/data:/app/data --name combacal.moving-contacts dkfbasel/combacal.move-contacts:1.0.0
