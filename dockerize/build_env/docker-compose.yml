@@ -1,0 +1,34 @@
+version: '3.4'
+
+# For more information on how to use this docker compose file see our docs page:
+#   https://docs.communityhealthtoolkit.org/apps/guides/hosting/self-hosting/
+
+services:
+
+  cht-build:
+    container_name: combacal.build
+    build: 
+      context: ../..
+      dockerfile: ./dockerize/build_env/Dockerfile
+    image: dkfbasel/combacal.build:1.0.0
+    networks:
+      - medic-net
+    env_file: cht.env
+
+  cht-build-test:
+    container_name: combacal.build-test
+    build: 
+      context: ../..
+      dockerfile: ./dockerize/build_env/Dockerfile
+      target: test
+    image: dkfbasel/combacal.build:test
+    networks:
+      - medic-net
+    env_file: cht.env
+
+
+# connect to the existing medic-net work in which the medic-os is running
+# hosting the CHT application
+networks:
+  medic-net:
+    external: true

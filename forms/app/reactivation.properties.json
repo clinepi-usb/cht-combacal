@@ -1,0 +1,10 @@
+{
+    "icon": "icon-person",
+    "title": "Reactivation Form",
+    "context": {
+        "person": true,
+        "place": false,
+        "expression": "!summary.alive"
+    },
+    "hidden_fields": [ "data"]
+}

@@ -1,0 +1,10 @@
+{
+  "icon": "icon-risk",
+  "title": "VHW Clinical Event Form",
+  "context": {
+    "person": true,
+    "place": false,
+    "expression": "summary.alive && user.role !== 'chw_supervisor' && user.role !== 'ccw_supervisor'"
+  },
+  "hidden_fields": [ "data"]
+}

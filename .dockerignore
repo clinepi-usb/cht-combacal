@@ -1,0 +1,4 @@
+# ignore the dockerize directory
+dockerize
+# except for the upload script
+!dockerize/build_env/uploadData.sh

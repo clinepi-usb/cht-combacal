@@ -1,0 +1,10 @@
+{
+  "icon": "icon-healthcare-medicine",
+  "title": "Cholesterol (DM 6 months)",
+  "context": {
+    "person": true,
+    "place": false,
+    "expression": "!contact && !contact.date_of_death"
+  },
+  "hidden_fields": [ "data"]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "cht-combacal-config-code",
+  "description": "CHT ComBaCaL Configuration Code",
+  "version": "0.2.0",
+  "engines": {
+    "node": ">=12.22.11",
+    "npm": ">=6.4.1"
+  },
+  "scripts": {
+    "test": "cht convert-app-forms convert-contact-forms compile-app-settings && nyc mocha --recursive",
+    "test-forms": "cht convert-app-forms convert-contact-forms && mocha --recursive test/forms",
+    "test-tasks": "cht compile-app-settings && mocha --recursive test/tasks",
+    "test-preloading": "mocha --recursive test/preloading",
+    "test-duedate": "mocha --recursive test/due-date",
+    "lint": "eslint --fix --ext .js,.jsx ."
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "cht-conf": "3.10.2",
+    "cht-conf-test-harness": "^2.4.1",
+    "eslint": "^8.15.0",
+    "eslint-plugin-node": "^11.1.0",
+    "mocha": "^9.2.2",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
+}

@@ -1,0 +1,10 @@
+{
+    "icon": "medic-clinic",
+    "title": "Household Form",
+    "context": {
+        "person": false,
+        "place": true,
+        "expression": "!contact"
+    },
+    "hidden_fields": [ "data"]
+}

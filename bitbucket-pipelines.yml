@@ -1,0 +1,98 @@
+image: atlassian/default-image:3
+
+pipelines:
+  custom: # Manually triggered pipelines
+    # production-deployment:  #name of this pipeline
+    #   - step:
+    #       name: 'Deploy to production'
+    #       deployment: production
+    #       script:
+    #         - echo "Manually triggered production deployment!"
+    #         - bash scripts/predeploy.sh
+    #         - bash scripts/test.sh
+    #         - bash scripts/deploy.sh
+    # manual-dev-deployment:   #name of this pipeline
+    #   - step:
+    #       name: 'Manual deploy to Dev (from any branch)'
+    #       deployment: dev
+    #       script:
+    #         - echo "Manually triggered dev deployment!"
+    #         - bash scripts/predeploy.sh
+    #         - bash scripts/test.sh
+    #         - bash scripts/deploy.sh
+    deploy-new-version:
+      # the variable can be set before the pipeline is run on bitbucket
+      - variables:
+          - name: BUILD_VERSION
+            default: "1.0.0"
+      - step:
+          name: 'Build: Convert Forms -> Deploy: Upload Forms'
+          # enable caching of docker layers for faster builds
+          caches:
+            - docker
+          services:
+            - docker
+          script:
+            # Activate BuildKit to be able to skip the test phase when target upload is defined
+            - export DOCKER_BUILDKIT=1
+
+            # normally it would be better to split the steps Build, Test and Deploy but there is no way to cache
+            # docker layers between different steps to prevent rebuilding already build docker layers
+            # (saving to artifacts did not work: https://community.atlassian.com/t5/Bitbucket-questions/Can-I-keep-Docker-images-between-Pipeline-steps/qaq-p/748273)
+            # BUILD STEP
+            - echo 'Run build step'
+            # NOTE: $DOCKER_USERNAME and DOCKER_PASSWORD have to be set as repos variables in bitbucket
+            # NOTE:
+            # Create an Access token with read and write permissions which can be used instead of the password
+            # and can be easily revoked when the access is not required anymore
+            # docker login required as the Dockerfile has to pull combacal.conf
+            - docker login --username $DOCKER_USERNAME  --password $DOCKER_PASSWORD_RDONLY
+            # build the container by using defined cht-build image which will load the source code into
+            # the container and convert the configs
+            - docker build --target conf -t dkfbasel/combacal.build:$BUILD_VERSION -f dockerize/build_env/Dockerfile .
+
+            # DEPLOY STEP
+            - echo 'Run deploy step'
+            - echo 'Build docker conf container to upload new configs'
+            - docker build --target upload -t dkfbasel/combacal.build:$BUILD_VERSION -f  dockerize/build_env/Dockerfile .
+            # running the docker container will upload the images
+            - echo 'Upload the new configs'
+            # NOTE: the MEDIC_PASSWORD has to be set as github pipeline variable, the CHT_PASSWORD set in the cht.env gets overridden to not use
+            # the local set password
+            - docker run --name combacal.build -e PROTOCOL=$MEDIC_PROTOCOL -e CHT_USER=$MEDIC_USER -e CHT_PASSWORD=$MEDIC_PASSWORD -e CHT_HOST=$COMBACAL_HOST dkfbasel/combacal.build:$BUILD_VERSION
+
+    deploy-new-playground:
+      - step:
+          name: 'Build: Convert Forms -> Deploy: Upload Forms'
+          # enable caching of docker layers for faster builds
+          caches:
+            - docker
+          services:
+            - docker
+          script:
+            # Activate BuildKit to be able to skip the test phase when target upload is defined
+            - export DOCKER_BUILDKIT=1
+
+            # normally it would be better to split the steps Build, Test and Deploy but there is no way to cache
+            # docker layers between different steps to prevent rebuilding already build docker layers
+            # (saving to artifacts did not work: https://community.atlassian.com/t5/Bitbucket-questions/Can-I-keep-Docker-images-between-Pipeline-steps/qaq-p/748273)
+            # BUILD STEP
+            - echo 'Run build step'
+            # NOTE: $DOCKER_USERNAME and DOCKER_PASSWORD have to be set as repos variables in bitbucket
+            # NOTE:
+            # Create an Access token with read and write permissions which can be used instead of the password
+            # and can be easily revoked when the access is not required anymore
+            # docker login required as the Dockerfile has to pull combacal.conf
+            - docker login --username $DOCKER_USERNAME  --password $DOCKER_PASSWORD_RDONLY
+            # build the container by using defined cht-build image which will load the source code into
+            # the container and convert the configs
+            - docker build --target conf -t dkfbasel/combacal.build -f dockerize/build_env/Dockerfile .
+
+            # DEPLOY STEP
+            - echo 'Run deploy step'
+            - echo 'Build docker conf container to upload new configs'
+            - docker build --target upload -t dkfbasel/combacal.build -f  dockerize/build_env/Dockerfile .
+            # running the docker container will upload the images
+            - echo 'Upload the new configs'
+            - docker run --name combacal.build -e PROTOCOL=$MEDIC_PROTOCOL -e CHT_USER=$MEDIC_USER -e CHT_PASSWORD=$MEDIC_PASSWORD_PLAYGROUND -e CHT_HOST=$COMBACAL_HOST_PLAYGROUND dkfbasel/combacal.build
+    

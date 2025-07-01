@@ -1,0 +1,10 @@
+{
+  "icon": "icon-risk",
+  "title": "Supervisor Clinical Event Form",
+  "context": {
+    "person": true,
+    "place": false,
+    "expression": "!contact && !contact.date_of_death"
+  },
+  "hidden_fields": [ "data"]
+}

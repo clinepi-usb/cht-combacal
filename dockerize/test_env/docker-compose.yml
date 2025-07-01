@@ -1,0 +1,20 @@
+version: '3.7'
+
+# For more information on how to use this docker compose file see our docs page:
+#   https://docs.communityhealthtoolkit.org/apps/guides/hosting/self-hosting/
+
+services:
+
+  cht-conf:
+    container_name: combacal.conf
+    build: 
+      context: .
+      dockerfile: cht-conf/Dockerfile
+    image: dkfbasel/combacal.conf:1.1.0
+
+  test-runner:
+    container_name: combacal.test
+    build: 
+      context: .
+      dockerfile: istanbul/Dockerfile
+    image: dkfbasel/combacal.test:1.0.0

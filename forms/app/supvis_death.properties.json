@@ -1,0 +1,10 @@
+{
+    "icon": "icon-person",
+    "title": "Supervisor Death Report",
+    "context": {
+        "person": true,
+        "place": false,
+        "expression": "!summary.alive && user.role !== 'chw' && user.role !== 'ccw'"
+    },
+    "hidden_fields": [ "data"]
+}

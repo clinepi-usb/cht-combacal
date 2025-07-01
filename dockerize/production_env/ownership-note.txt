@@ -1,0 +1,9 @@
+#!/bin/sh
+# created by running following cmd in medic os container:
+# find . -printf 'chown -h %U:%G %h/%f\n' > restore-original-ownerships.sh
+# use -h option to change the ownership of the symlink and not of the linked file (the latter is default behaviour)
+# the linked file is changed anyway as we run an ownership change on each file
+# the script can be used to restore all needed permissions on the directories
+# as copying the data to container as transport vehicle for the bootstrapped CHT
+# App resets all ownership's to root (UID:0) when copying the files into the container.
+# Permissions are not changed.

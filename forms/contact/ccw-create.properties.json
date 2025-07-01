@@ -1,0 +1,9 @@
+{
+    "icon": "icon-person",
+    "title": "Create VHW",
+    "context": {
+        "person": true,
+        "place": false,
+        "permission": "can_create_vhw"
+}
+}

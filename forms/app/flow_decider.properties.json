@@ -1,0 +1,12 @@
+{
+    "icon": "icon-service-rating@2x",
+    "title": "Flow Decider Form",
+    "hidden_fields": [
+        "data"
+    ],
+    "context": {
+        "person": true,
+        "place": false,
+        "expression": "!contact && !contact.date_of_death"
+    }
+}

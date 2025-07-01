@@ -1,0 +1,10 @@
+{
+    "icon": "medic-clinic",
+    "title": "Household Consent Reminder",
+    "context": {
+        "person": false,
+        "place": true,
+        "expression": "!contact && !contact.date_of_death"
+    },
+    "hidden_fields": [ "data"]
+}

@@ -1,0 +1,10 @@
+{
+  "icon": "medic-clinic",
+  "title": "Correction Form",
+  "context": {
+    "person": true,
+    "place": false,
+    "expression": "user.role !== 'chw' && user.role !== 'ccw' && contact.type !== 'household' && user.role !== 'chw_supervisor' && user.role !== 'ccw_supervisor'"
+  },
+  "hidden_fields": [ "data"]
+}

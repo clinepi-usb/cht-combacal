@@ -1,0 +1,27 @@
+# Image to build a docker container running cht-conf
+# cht-conf is needed to compile forms and convert xlsx to xforms
+# which can then be uploaded to a running CHT-Instance
+FROM ubuntu:18.04
+
+RUN echo "==> Installing Python dependencies" && \
+    apt-get update -y   && \
+    apt-get install --no-install-recommends -y -q \
+            build-essential python-setuptools     \
+            python python-pip python-dev          \
+            libffi-dev  libssl-dev                \
+            libxml2-dev libxslt1-dev zlib1g-dev   \
+            git wget python-wheel curl
+
+RUN echo "====> Installing cht-conf python stuff"    &&\
+    python -m pip install git+https://github.com/medic/pyxform.git@medic-conf-1.17#egg=pyxform-medic
+
+# CHT-conf needs an old nodejs version to be runnable
+RUN curl -sL https://deb.nodesource.com/setup_12.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get install -y nodejs
+
+RUN npm install -g cht-conf
+RUN npm install -g eslint@8.15.0
+RUN npm install -g eslint-plugin-node@11.1.0
+RUN npm install -g eslint-plugin-json@3.1.0
+RUN npm install -g @medic/eslint-config@1.1.0

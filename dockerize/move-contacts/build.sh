@@ -1,0 +1,1 @@
+docker build . -t dkfbasel/combacal.move-contacts:1.0.0

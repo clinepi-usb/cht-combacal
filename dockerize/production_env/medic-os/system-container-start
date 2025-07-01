@@ -1,0 +1,117 @@
+#!/bin/sh
+
+export logger_suppress_debug='t'
+export logger_suppress_output='t'
+export logger_suppress_messages=''
+
+source '/boot/include/utility'
+source '/boot/include/logger'
+source '/boot/include/startup'
+source '/boot/include/package'
+source '/boot/include/manifest'
+source '/boot/include/template'
+source '/boot/include/supervisor'
+
+main()
+{
+  trap '' INT
+
+  package_init
+  supervisor_init
+
+  # Update packages:
+  #   Update each package necessary for proper startup; the `package_update`
+  #   function will avoid overwriting existing binaries if it's able to.
+
+  log 'Starting software update process'
+  info 'Setting up software...'
+
+  local total_packages='0'
+  local finished_packages='0'
+  local is_newly_initialized=''
+
+  if package_is_first_run; then
+    is_newly_initialized='t'
+  fi
+
+  for package_path in /mnt/startup/packages/*.vpkg; do
+    total_packages="$(($total_packages + 1))"
+  done
+
+  for package_path in /mnt/startup/packages/*.vpkg; do
+    package_update "$package_path" "$is_newly_initialized" '' 't' \
+      || fatal 'Failed to extract required software from disk/image'
+
+    finished_packages="$(($finished_packages + 1))"
+    local percent_packages="$((100 * $finished_packages / $total_packages))"
+
+    info "Setting up software ($percent_packages% complete)..."
+  done
+
+  log 'Starting up all services'
+
+  info 'Starting services...'
+
+  supervisor_reset \
+    || fatal "Failed to reset supervisor status information"
+
+  for dir in /srv/scripts/*; do
+    if [ -f "$dir/start" ]; then
+      local pkg="`basename -- "$dir"`"
+      supervisor_start "$pkg" \
+        || fatal "Failed to start required network service '$pkg'"
+
+      info "Started service $pkg"
+    fi
+  done
+ # packages of services are installed we can replace the nginx config file
+  # replace the config file before service start up so that the nginx server is started with the correct
+  # start config
+  info "Replacing nginx.conf files with custom nginx.conf"
+  rm -f /srv/settings/medic-core/nginx/nginx.conf
+  rm -f /srv/system/settings/packages/medic-core/nginx/nginx.conf
+  cp /nginx/custom-configs/nginx.conf /srv/settings/medic-core/nginx/
+  cp /nginx/custom-configs/nginx.conf /srv/system/settings/packages/medic-core/nginx/
+
+  # change the ownership to 1000:avahi
+  chown 1000:avahi /srv/settings/medic-core/nginx/nginx.conf
+  chown 1000:avahi /srv/system/settings/packages/medic-core/nginx/nginx.conf
+
+  # remove the standard self signed certificates as the USB infrastructure handles https connections
+  info "Removing self signed certificates"
+  rm -f  /srv/settings/medic-core/nginx/private/default.crt;
+  rm -f /srv/settings/medic-core/nginx/private/default.key;
+
+  # wait until nginx is running to restart it
+  isNginxRunning=$(supervisor_is_service_running medic-core nginx)
+  while ! $isNginxRunning
+  do
+    isNginxRunning=$(supervisor_is_service_running medic-core nginx)
+    echo "Waiting for nginx service"
+  done
+
+  info "Restart nginx service to load new config"
+  supervisor_service_restart medic-core nginx
+
+  info "Stopping not required openssh service"
+  supervisor_service_down medic-core openssh
+
+  info 'Synchronizing disks...'
+  synchronize_disks
+
+  info 'System started successfully'
+
+  if [ -z "$DOCKER_INTERACTIVE" ]; then
+    info 'Starting log streaming'
+    exec /boot/log-streamer
+  else
+    info 'Starting interactive console'
+    exec /boot/recovery-console
+  fi
+
+  return 0
+}
+
+main "$@"
+
+exit "$?"
