@@ -1,0 +1,10 @@
+{
+    "icon": "icon-healthcare-diagnosis",
+    "title": "Cohort Baseline Form",
+    "hidden_fields": [ "hhhead", "hhrelation", "employment", "marstat", "data", "report.cohort_bsl.soc.hhrel"],
+    "context": {
+        "person": true,
+        "place": false,
+        "expression": "!contact && !contact.date_of_death"
+    }
+}

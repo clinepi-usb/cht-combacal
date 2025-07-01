@@ -1,0 +1,10 @@
+{
+    "icon": "medic-clinic",
+    "title": "Visit Form",
+    "context": {
+        "person": true,
+        "place": false,
+        "expression": "!contact && !contact.date_of_death"
+    },
+    "hidden_fields": [ "data"]
+}

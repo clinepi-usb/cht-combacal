@@ -1,0 +1,12 @@
+User on Medicos:
+horticulturalist:x:95:95:Horticulturalist Process Account:/srv/storage/horticulturalist:/bin/bash
+avahi:x:999:1000:Service - Avahi:/var/empty:
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+couchdb:x:998:1001:Service - CouchDB:/var/empty:
+
+
+Groups on Medicos:
+horticulturalist:x:95:
+avahi:x:1000:
+staff:x:50:
+couchdb:x:1001:
